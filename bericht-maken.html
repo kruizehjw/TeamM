@@ -1,0 +1,198 @@
+<!--
+    Company   : TeamM BV
+    Date      : May 2016
+    Author    : Henk Kruize (Kruize Consultancy)
+    Author URL: http://kruize-consultancy.nl
+    License: Creative Commons Attribution 3.0 Unported
+    License URL: http://creativecommons.org/licenses/by/3.0/
+    
+    Name       : bericht-maken.html
+    Goal       : Aanmaken van een nieuw bericht en opslaan in database
+		 
+    Aanroep	: Vanuit berichten.html                 
+-->
+<!DOCTYPE HTML>
+<head>
+  <title>Team M</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+  <link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/login.js"></script>
+  <script type="text/javascript" src="js/jquery.easing.js"></script>
+  <script type="text/javascript" src="js/jquery.ulslide.js"></script>
+ 
+  <link type="text/css" href="css/mmenu.css" rel="stylesheet" media="all" />
+  <script type="text/javascript" src="js/jquery.mmenu.min.js"></script>
+
+</head>
+<body>
+  <nav id="menu">
+    <ul>
+      <div id="teammenu"></div> 
+    </ul>
+  </nav>				       
+  <div class="wrap">	 
+    <div class="header">
+      <div class="header_top">
+	  <div class="back-ico">
+	    <a href="javascript:window.history.back();;"></a>
+	  </div>  
+	  <div class="profile_details">
+	    <div id="loginContainer">
+	      <a id="loginButton" class=""><span>berichten</span></a>   
+	    </div> 
+	    
+	    <div class="profile_img">	
+		
+	    </div>		
+	    <div class="clear"></div>		  	
+	  </div>	
+	  <div class="clear"></div>				 
+      </div>
+    </div>	  					     
+  </div>	  				 
+  <div class="main">  
+      <div class="wrap">  		 
+              <div class="column_right">
+            	<div class="column_right_grid">
+                 <div class="newsletter">
+		    <h3></h3>
+		    <form>
+		      <select id="ontvangerid" style="width: 44%;
+						   padding: 16px 20px;
+						    border: none;
+						  margin:20px 15px 2px 15px;
+						  border-radius: 4px;
+						  font-size:20px;
+						  background-color: #f1f1f1;">
+			<option value="planner">planner</option>
+			<option value="team">team</option>
+			<option value="all">Alle</option>
+		      </select>
+		      <select id="ontvangerid" style="width: 44%;
+						   padding: 16px 20px;
+						    border: none;
+						  margin:20px 15px 2px 15px;
+						  border-radius: 4px;
+						  font-size:20px;
+						  background-color: #f1f1f1;">
+			<option value="planner">planner</option>
+			<option value="team">team</option>
+			<option value="all">Alle</option>
+		      </select>		    		      
+		    <span>
+
+		      <input id="onderwerpid" type="text" value="Onderwerp ....." onfocus="this.value = '';" onblur="if (this.value == '')
+		      {this.value = 'Enter your email';}">
+		    </span>		    
+		    <span>
+		      <textarea id="tekstid" rows="6"></textarea>
+		    </span>
+		    <div id="verzuimdiv"><img id="berichtbutton" src="images/teamm-checkedwit64.png" style="display:block;margin:0 auto;" alt=""></div>
+		    </form>
+		  </div>
+		</div>
+             </div>		
+	      <div class="clear"></div>
+	    </div>
+      </div>
+  
+  <script type="text/javascript" src="phonegap.js"></script>
+  <script type="text/javascript" src="js/index.js"></script>
+  <script type="text/javascript" src="js/teamm-jsonserv.js"></script>
+  <script type="text/javascript" src="js/teamm-berichtmaken.js"></script>    
+
+    <script type="text/javascript">
+	    
+            document.addEventListener("deviceready", onDeviceReady,false);
+	    function onDeviceReady() {
+		// Vooralsnog menu offline opgebouwd, dus niet nodig om voor infoscherm internetconnectie te testen
+		// Tevens ook niet nodig om menu op te halen (remote).
+		// functie mmenu nu dus hier geplaatst. Als menu dynamisch wordt opgebouwd, dan hier weghalen.
+		// Tevens als niet middels app, maar via browser lees_data(1) hier aanzetten.
+	      $(document).on("click","#berichtbutton",function() {     //Button neg
+		  var l_medewerker = localStorage.teamprofiel;
+		  var l_klantid    = localStorage.teamklant;
+		  var l_ontvanger  = document.getElementById("ontvangerid").value;
+		  var l_onderwerp  = document.getElementById("onderwerpid").value;
+		  var l_tekst      = document.getElementById("tekstid").value;
+		//alert(l_bezoekid);
+		  $.ajax({
+                    url: "http://ts.teamm.nl:8080/"+localStorage.getItem('teamuri')+"/berichtins",
+                    type: "POST",
+                    dataType: "text",
+                    headers:{"klant": l_klantid,
+		             "medewerker": l_medewerker,
+			     "onderwerp": l_onderwerp,
+			     "ontvangers": l_ontvanger,
+			     "tekst": l_tekst,
+			     "app_token":localStorage.getItem('teamtoken')
+			     
+                            },
+                    success: function (data,status,jqXHR) {
+			    var element = document.getElementById("verzuimdiv");
+			    if (jqXHR.getResponseHeader('status')=='OK') {
+			      	element.innerHTML = '<img id="verzuimbutton" src="images/teamm-checkedgreen64.png" style="display:block;margin:0 auto;" alt="">';	
+			       }
+			    else {
+			        element.innerHTML = '<img id="verzuimbutton" src="images/teamm-checkedred64.png" style="display:block;margin:0 auto;" alt="">';				 			      
+			      } 
+                            },
+                        error: function(jqXHR,status) {
+			  //alert(JSON.stringify(jqXHR));
+			    var element = document.getElementById("verzuimdiv");
+			    element.innerHTML = '<img id="verzuimbutton" src="images/teamm-checkedred64.png" style="display:block;margin:0 auto;" alt="">';
+                            alert('Service of server niet beschikbaar');
+                            }
+                    });
+	      });
+		//lees_data('1');
+		checkConnection();
+		//checkconnectionpc();
+		//$('nav#menu').mmenu();
+	    }
+
+	  function checkconnectionpc() {
+	    //lees_menu_tot();
+	    lees_data('1');
+	    }	    
+
+
+	    
+	    function checkConnection() {
+	    var states = {};
+
+	    if (window.screen.availWidth < 1280) { //gebruiker op mobile
+	        var networkState = navigator.connection.type;
+		states[Connection.UNKNOWN]  = 'Unknown connection';
+	        states[Connection.ETHERNET] = 'Ethernet connection';
+	        states[Connection.WIFI]     = 'WiFi connection';
+		states[Connection.CELL_2G]  = 'Cell 2G connection';
+	        states[Connection.CELL_3G]  = 'Cell 3G connection';
+	        states[Connection.CELL_4G]  = 'Cell 4G connection';
+	        states[Connection.CELL]     = 'Cell generic connection';
+	        states[Connection.NONE]     = 'No network connection';
+	    }
+	    else {
+	        var networkState = 'WIFI connection';
+	        states[networkState]     = 'WIFI connection';
+	    }
+            
+	    if (states[networkState]=='No network connection') {
+		sessionStorage.teamonline='N';
+		//lees_menu_tot();
+		lees_data('0');
+	       }
+	    else {
+	      	sessionStorage.teamonline='Y';
+	        //lees_menu_tot();
+		lees_data('1');
+	       }
+            }
+	
+    </script>
+</body>
+</html>
+
